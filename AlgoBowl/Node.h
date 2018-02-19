@@ -2,7 +2,8 @@
 using namespace std;
 #include "Edge.h"
 #include <set>
-class Node;
+//class Node;
+class Edge;
 class Node {
 public:
 	int value;
@@ -11,4 +12,6 @@ public:
 	Node* parent;
 	Node();
 	Node(int value, Edge child);
+
+	void addChild(int value, Edge child);
 };
