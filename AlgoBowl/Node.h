@@ -18,4 +18,6 @@ public:
 	void addChild(Edge child);
 	int getValue();
 	void printChildren();
+	vector<Edge> getChildren() const;
+	//	bool operator< (const)
 };

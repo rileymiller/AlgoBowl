@@ -22,3 +22,7 @@ void Node::printChildren() {
 		cout << "target: " << children.at(i).getTarget() << ", cost: " << children.at(i).getCost() << " | ";
 	}
 }
+
+vector<Edge> Node::getChildren() const {
+	return children;
+}
