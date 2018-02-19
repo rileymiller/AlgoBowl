@@ -9,7 +9,6 @@ Node::Node(int value, Edge child) {
 	this->value = value;
 }
 
-void Node::addChild(int value, Edge child){
+void Node::addChild(Edge child){
 	children.insert(child);
-	this->value = value;
 }

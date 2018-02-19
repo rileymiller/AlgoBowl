@@ -5,8 +5,8 @@ using namespace std;
 class Edge {
 public:
 	int cost;
-	Node target;
+	int target;
 	Edge();
-	Edge(Node target, int cost);
+	Edge(int target, int cost);
 };
 

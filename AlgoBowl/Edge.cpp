@@ -4,7 +4,7 @@ using namespace std;
 Edge::Edge() {
 }
 
-Edge::Edge(Node target, int cost) {
+Edge::Edge(int target, int cost) {
 	this->target = target;
 	this->cost = cost;
 }

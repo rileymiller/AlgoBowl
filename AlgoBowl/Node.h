@@ -8,10 +8,10 @@ class Node {
 public:
 	int value;
 	int finalCost;
+	int setCost;
 	set<Edge> children;
-	Node* parent;
 	Node();
 	Node(int value, Edge child);
 
-	void addChild(int value, Edge child);
+	void addChild(Edge child);
 };
