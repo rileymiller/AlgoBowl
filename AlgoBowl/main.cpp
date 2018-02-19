@@ -33,7 +33,7 @@ int main() {
 	fin >> vertices;
 	fin >> edges;
 
-	while (!fin.eof) {
+	while (!fin.eof()) {
 		fin >> nodeOne;
 		fin >> nodeTwo;
 		fin >> weight;
@@ -42,17 +42,30 @@ int main() {
 		}
 		else {
 			Node tempNode = Node(nodeOne, Edge(nodeTwo, weight));
-			nodeMap.insert({ nodeOne, tempNode });
+			nodeMap.insert(make_pair(nodeOne, tempNode));
 		}
 		if (nodeMap.find(nodeTwo) != nodeMap.end()) {
 			nodeMap[nodeTwo].addChild(Edge(nodeOne, weight));
 		}
 		else {
 			Node tempNodeTwo = Node(nodeTwo, Edge(nodeOne, weight));
-			nodeMap.insert({ nodeTwo, tempNodeTwo });
+			nodeMap.insert(make_pair(nodeTwo, tempNodeTwo));
 		}
 	}
 
+	//cout << nodeMap << endl;
+
+	/*for (auto& kv : nodeMap) {
+    std::cout << kv.first << " has value " << kv.second << std::endl;
+	}*/
+
+
+	for (auto &p : nodeMap) {
+    cout << "m[" << p.first << "] = ";
+    p.second.printChildren();
+    cout << endl;
+    
+	}
 	//ask John how he planned on creating nodes
 
 

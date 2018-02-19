@@ -8,5 +8,7 @@ public:
 	int target;
 	Edge();
 	Edge(int target, int cost);
+	int getCost();
+	int getTarget();
 };
 
