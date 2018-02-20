@@ -9,7 +9,6 @@ class Edge;
 class Node {
 public:
 	int value;
-	int finalCost;
 	int setCost;
 	vector<Edge> children;
 	Node();

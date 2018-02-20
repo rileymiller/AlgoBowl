@@ -8,8 +8,54 @@
 
 
 using namespace std;
+void printSets(set<int> &setOne, set<int> &setTwo) {
+	cout << "Set One: ";
+	for (const int &value : setOne) {
+		cout << " " << value;
+	}
+	cout << endl;
+	cout << "Set Two: ";
+	for (const int &value : setTwo) {
+		cout << " " << value;
+	}
+}
+int selectNode(set<int> &setOne, set<int> &setTwo, map<int, Node> &nodeMap, int &lastSwapped) {
+	int maxCost = -99999;
+	int maxInt = -1;
+	for (const int &value : setOne) {
+		if (nodeMap[value].setCost > maxCost && value != lastSwapped) {
+			maxInt = value;
+			maxCost = nodeMap[value].setCost;
+		}
+	}
+	lastSwapped = maxInt;
+	return maxInt;
+}
 
-
+void swapSet(set<int> &setOne, set<int> &setTwo, int node) {
+	if (setOne.find(node) != setOne.end()) {
+		setOne.erase(node);
+		setTwo.insert(node);
+	}
+	else {
+		setTwo.erase(node);
+		setOne.insert(node);
+	}
+}
+void calcCost(set<int> &setOne, set<int> &setTwo, map<int,Node> &nodeMap) {
+	for (const int &value : setOne) {
+		int setCost = 0;
+		for (int i = 0; i < nodeMap.at(value).getChildren().size(); i++) {
+			if (setTwo.find(nodeMap.at(value).getChildren().at(i).getTarget()) != setTwo.end()) {
+				setCost += nodeMap.at(value).getChildren().at(i).getCost();
+			}
+			else {
+				setCost -= nodeMap.at(value).getChildren().at(i).getCost();;
+			}
+		}
+		nodeMap.at(value).setCost = setCost;
+	}
+}
 int getIndex(int value, vector<Node> &nodes){
 	for(int i =0; i < nodes.size(); i++){
 		if(nodes.at(i).getValue() == value)
@@ -102,6 +148,7 @@ int main() {
 
 	set<int> setOne;
 	set<int> setTwo;
+	
 
 	for(int i = 0; i < nodes.size(); i++){
 		if(i % 2 == 0){
@@ -111,10 +158,40 @@ int main() {
 		}
 	}
 
+	int initialCost = getTotalCost(setOne, setTwo, nodeMap);
+	int swapIndex;
+	int swapIndexTwo;
+	int lastSwapped = -1;
 	cout << endl;
 	cout << getTotalCost(setOne, setTwo, nodeMap) << endl;
+	set<int> bestSetOne = setOne;
+	set<int> bestSetTwo = setTwo;
+	int bestCost = initialCost;
+	int currentCost = 0;
 
-
+	for (int i = 0; i < edges; i++) {
+		calcCost(setOne, setTwo, nodeMap);
+		calcCost(setTwo, setOne, nodeMap);
+		swapIndex = selectNode(setOne, setTwo, nodeMap, lastSwapped);
+		swapSet(setOne, setTwo, swapIndex);
+		calcCost(setTwo, setOne, nodeMap);
+		swapIndex = selectNode(setTwo, setOne, nodeMap, lastSwapped);
+		swapSet(setTwo, setOne, swapIndex);
+		currentCost = getTotalCost(setOne, setTwo, nodeMap);
+		cout << "BEST COST: " << bestCost << endl;
+		if (currentCost < bestCost) {
+			//cout << "BEST COST: " << bestCost << endl;
+			bestCost = currentCost;
+			bestSetOne = setOne;
+			bestSetTwo = setTwo;
+		}
+		cout << "Cost: " << getTotalCost(setOne, setTwo, nodeMap) << endl;
+	}
+	printSets(setOne, setTwo);
+	cout << endl;
+	printSets(bestSetOne, bestSetTwo);
+	cout << endl;
+	cout << getTotalCost(bestSetOne, bestSetTwo, nodeMap) << endl;
 	//ask John how he planned on creating nodes
 
 
