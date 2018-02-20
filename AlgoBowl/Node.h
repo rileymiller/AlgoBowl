@@ -2,16 +2,22 @@
 using namespace std;
 #include "Edge.h"
 #include <set>
+#include <vector>
+#include <iostream>
 //class Node;
 class Edge;
 class Node {
 public:
 	int value;
 	int finalCost;
-	set<Edge> children;
-	Node* parent;
+	int setCost;
+	vector<Edge> children;
 	Node();
 	Node(int value, Edge child);
 
-	void addChild(int value, Edge child);
+	void addChild(Edge child);
+	int getValue();
+	void printChildren();
+	vector<Edge> getChildren() const;
+	//	bool operator< (const)
 };

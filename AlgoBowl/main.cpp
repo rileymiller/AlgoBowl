@@ -1,14 +1,42 @@
 #include "Edge.h"
 #include "Node.h"
-
+#include <map>
 #include <set>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 
 using namespace std;
 
+
+int getIndex(int value, vector<Node> &nodes){
+	for(int i =0; i < nodes.size(); i++){
+		if(nodes.at(i).getValue() == value)
+			return i;
+	}
+
+	return -1;
+}
+
+
+int getTotalCost(set<int> &setOne, set<int> &setTwo, map<int,Node>&nodeMap){
+	int total_cost = 0;
+	for(const int &value : setOne){
+		for(int i = 0; i < nodeMap.at(value).getChildren().size(); i++){
+			//cout << i << " ";
+			if(setTwo.find(nodeMap.at(value).getChildren().at(i).getTarget()) != setTwo.end()){
+				total_cost += nodeMap.at(value).getChildren().at(i).getCost();
+			}
+		}
+	}
+
+	return total_cost;
+} 
+
 int main() {
+	map<int, Node> nodeMap;
+	vector<Node> nodeVector;
 
 	cout << "Hello world" << endl;
 
@@ -18,14 +46,74 @@ int main() {
 	fin.open("input.txt"); //insert input file here 
 
 	if (!fin) {
-    cerr << "Unable to open file datafile.txt";
-    exit(1);   // call system to stop
+		cerr << "Unable to open file datafile.txt";
+	//	exit(1);   // call system to stop
 	}
 
 	int vertices;
 	int edges; 
+	int nodeOne;
+	int nodeTwo;
+	int weight;
 	fin >> vertices;
 	fin >> edges;
+
+	while (!fin.eof()) {
+		fin >> nodeOne;
+		fin >> nodeTwo;
+		fin >> weight;
+		if (nodeMap.find(nodeOne) != nodeMap.end()) {
+			nodeMap[nodeOne].addChild(Edge(nodeTwo, weight));
+		}
+		else {
+			Node tempNode = Node(nodeOne, Edge(nodeTwo, weight));
+			nodeMap.insert(make_pair(nodeOne, tempNode));
+		}
+		if (nodeMap.find(nodeTwo) != nodeMap.end()) {
+			nodeMap[nodeTwo].addChild(Edge(nodeOne, weight));
+		}
+		else {
+			Node tempNodeTwo = Node(nodeTwo, Edge(nodeOne, weight));
+			nodeMap.insert(make_pair(nodeTwo, tempNodeTwo));
+		}
+	}
+
+	//cout << nodeMap << endl;
+
+	/*for (auto& kv : nodeMap) {
+    std::cout << kv.first << " has value " << kv.second << std::endl;
+	}*/
+
+    vector<Node> nodes;
+	for (auto &p : nodeMap) {
+    cout << "m[" << p.first << "] = ";
+    p.second.printChildren();
+    cout << endl;
+    nodes.push_back(p.second);
+	}
+
+	cout << endl;
+	for(int i =0; i < nodes.size(); i++){
+		cout << nodes.at(i).getValue() << " : "; 
+		nodes.at(i).printChildren();
+		cout << endl;
+	}
+
+
+	set<int> setOne;
+	set<int> setTwo;
+
+	for(int i = 0; i < nodes.size(); i++){
+		if(i % 2 == 0){
+			setOne.insert(nodes.at(i).getValue());
+		} else {
+			setTwo.insert(nodes.at(i).getValue());
+		}
+	}
+
+	cout << endl;
+	cout << getTotalCost(setOne, setTwo, nodeMap) << endl;
+
 
 	//ask John how he planned on creating nodes
 
