@@ -34,6 +34,7 @@ int selectNode(vector<int> &vectorOne, vector<int> &vectorTwo, map<int, Node> &n
 	return maxInt;
 }
 void updateCost(int swapNode, map<int, Node> &nodeMap, bool arr[]) {
+	nodeMap[swapNode].setCost *= -1;
 	for (int i = 0; i < nodeMap[swapNode].getChildren().size(); i++) {
 		int target = nodeMap[swapNode].getChildren().at(i).target;
 		Edge edge = nodeMap[swapNode].getChildren().at(i);
@@ -156,7 +157,7 @@ int main() {
 
 	fout.open("output.txt");
 
-	fin.open("1000.txt"); //insert input file here 
+	fin.open("input.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
