@@ -80,6 +80,9 @@ bool findElement(vector<int> &vec, int element) {
 	}
 	return false;
 }
+void updateCost() {
+
+}
 void calcCost(vector<int> &vectorOne, vector<int> &vectorTwo, map<int,Node> &nodeMap, bool arr[]) {
 	for (int j = 0; j < vectorOne.size(); j++) {
 		int setCost = 0;
@@ -139,8 +142,11 @@ int main() {
 
 
 	ifstream fin;
+	ofstream fout;
 
-	fin.open("1000.txt"); //insert input file here 
+	fout.open("output.txt");
+
+	fin.open("input.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
@@ -309,6 +315,15 @@ int main() {
 			}
 			//bitArrayOneBest = bitArrayOne;
 			//bitArrayTwoBest = bitArrayTwo;
+			fout << bestCost << "\n";
+			for(int i = 0; i < bestvectorOne.size(); i++) {
+				fout << bestvectorOne[i] << " ";
+			}
+			fout << "\n";
+			for (int i = 0; i < bestvectorTwo.size(); i++) {
+				fout << bestvectorTwo[i] << " ";
+			}
+			fout << "\n";
 		}
 		//cout << "Cost: " << getTotalCost(vectorOne, vectorTwo, nodeMap) << endl;
 	}
