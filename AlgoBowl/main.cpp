@@ -33,10 +33,22 @@ int selectNode(vector<int> &vectorOne, vector<int> &vectorTwo, map<int, Node> &n
 	lastSwapped = maxInt;
 	return maxInt;
 }
-
-void swapvector(vector<int> &vectorOne, vector<int> &vectorTwo, int node, bool arrOne[], bool arrTwo[]) {
+void updateCost(int swapNode, map<int, Node> &nodeMap, bool arr[]) {
+	for (int i = 0; i < nodeMap[swapNode].getChildren().size(); i++) {
+		int target = nodeMap[swapNode].getChildren().at(i).target;
+		Edge edge = nodeMap[swapNode].getChildren().at(i);
+		if (arr[target] == 0) {
+			nodeMap[target].setCost -= 2 * edge.cost;
+		}
+		else {
+			nodeMap[target].setCost += 2 * edge.cost;
+		}
+	}
+}
+void swapvector(vector<int> &vectorOne, vector<int> &vectorTwo, int node, bool arrOne[], bool arrTwo[], map<int,Node> &nodeMap) {
 	for (int i = 0; i < vectorOne.size(); i++) {
 		if (vectorOne[i] == node) {
+			updateCost(node, nodeMap, arrOne);
 			vectorTwo.push_back(node);
 			arrTwo[node] = 1;
 			vectorOne.erase(vectorOne.begin() + i);
@@ -80,9 +92,7 @@ bool findElement(vector<int> &vec, int element) {
 	}
 	return false;
 }
-void updateCost() {
 
-}
 void calcCost(vector<int> &vectorOne, vector<int> &vectorTwo, map<int,Node> &nodeMap, bool arr[]) {
 	for (int j = 0; j < vectorOne.size(); j++) {
 		int setCost = 0;
@@ -146,7 +156,7 @@ int main() {
 
 	fout.open("output.txt");
 
-	fin.open("input.txt"); //insert input file here 
+	fin.open("1000.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
@@ -270,11 +280,13 @@ int main() {
 	int currentCost = 0;
 	cout << "Initial cost: " << initialCost << endl;
 	cout << "EDGED: " << edges << endl;
+	calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
+	calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
 	for (int i = 0; i < edges; i++) {
 		cout << "I: " << i << endl;
 		if (rando == 0) {
 			cout << "Calc cost 1" << endl;
-			calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
+			//calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
 			//cout << "Calc cost 2" << endl;
 			//calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
 		//	cout << "Calculated costs" << endl;
@@ -287,16 +299,16 @@ int main() {
 		}
 		//cout << "got index" << swapIndex << " " << vectorOne.size() <<  endl;
 		cout << "Swapping" << endl;
-		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo);
+		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo, nodeMap);
 		cout << "swapped nodes" << endl;
 		if (rando == 0) {
-			calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
+			//calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
 			swapIndex = selectNode(vectorTwo, vectorOne, nodeMap, lastSwapped);
 		}
 		else {
 			swapIndex = vectorTwo[rand() % vectorTwo.size()];
 		}
-		swapvector(vectorTwo, vectorOne, swapIndex, bitArrayTwo, bitArrayOne);
+		swapvector(vectorTwo, vectorOne, swapIndex, bitArrayTwo, bitArrayOne, nodeMap);
 		cout << "start calc cost" << endl;
 		currentCost = getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
 		cout << "Current Cost: " << currentCost << endl;
