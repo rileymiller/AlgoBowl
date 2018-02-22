@@ -192,14 +192,13 @@ int main() {
 	fin >> edges;
 
 	while (!fin.eof()) {
-		//cout << "here" << endl;
 		fin >> nodeOne;
 		fin >> nodeTwo;
 		fin >> weight;
 		if (nodeOne > maxNode) {
 			maxNode = nodeOne;
 		}
-		else if (nodeTwo) {
+		else if (nodeTwo > maxNode) {
 			maxNode = nodeTwo;
 		}
 		if (nodeMap.find(nodeOne) != nodeMap.end()) {
