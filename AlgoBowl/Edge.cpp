@@ -4,8 +4,9 @@ using namespace std;
 Edge::Edge() {
 }
 
-Edge::Edge(int target, int cost) {
+Edge::Edge(int target, int cost, int parent) {
 	this->target = target;
+	this->parent = parent;
 	this->cost = cost;
 }
 

@@ -6,8 +6,9 @@ class Edge {
 public:
 	int cost;
 	int target;
+	int parent;
 	Edge();
-	Edge(int target, int cost);
+	Edge(int target, int cost, int parent);
 	int getCost();
 	int getTarget();
 };

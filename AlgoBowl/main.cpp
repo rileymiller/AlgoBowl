@@ -46,10 +46,31 @@ void updateCost(int swapNode, map<int, Node> &nodeMap, bool arr[]) {
 		}
 	}
 }
-void swapvector(vector<int> &vectorOne, vector<int> &vectorTwo, int node, bool arrOne[], bool arrTwo[], map<int,Node> &nodeMap) {
+void updateEdgeVec(int swapNode, map<int, Node> &nodeMap, vector<Edge> &edgeVec, bool arrOne[], bool arrTwo[]) {
+	Node swapNodeNode = nodeMap[swapNode];
+	for (int i = 0; i < swapNodeNode.getChildren().size(); i++) {
+		if (arrOne[swapNodeNode.getChildren().at(i).target] == 1) {
+			edgeVec.push_back(swapNodeNode.getChildren().at(i));
+			
+		}
+		else {
+			for (int j = 0; j < edgeVec.size(); j++) {
+				if ((edgeVec[j].parent == swapNode && edgeVec[j].target == swapNodeNode.getChildren().at(i).target)
+					|| (edgeVec[j].target == swapNode && edgeVec[j].parent == swapNodeNode.getChildren().at(i).target)) {
+					edgeVec.erase(edgeVec.begin() + j);
+					break;
+				}
+			}
+		}
+
+
+	}
+}
+void swapvector(vector<int> &vectorOne, vector<int> &vectorTwo, int node, bool arrOne[], bool arrTwo[], map<int,Node> &nodeMap, vector<Edge> &edgeVec) {
 	for (int i = 0; i < vectorOne.size(); i++) {
 		if (vectorOne[i] == node) {
 			updateCost(node, nodeMap, arrOne);
+			updateEdgeVec(node, nodeMap, edgeVec, arrOne, arrTwo);
 			vectorTwo.push_back(node);
 			arrTwo[node] = 1;
 			vectorOne.erase(vectorOne.begin() + i);
@@ -118,31 +139,28 @@ int getIndex(int value, vector<Node> &nodes){
 }
 
 
-int getTotalCost(vector<int> &vectorOne, vector<int> &vectorTwo, map<int,Node>&nodeMap, bool arr[]){
+int getTotalCost(vector<int> &vectorOne, vector<int> &vectorTwo, map<int,Node>&nodeMap, bool arr[], vector<Edge> &edgeVec, bool doIt){
 	int total_cost = 0;
 	for (int j = 0; j < vectorOne.size(); j++) {
 		for (int i = 0; i < nodeMap.at(vectorOne[j]).getChildren().size(); i++) {
 			if (arr[nodeMap.at(vectorOne[j]).getChildren().at(i).getTarget()] == 0) {
+				if (doIt == 1) {
+					edgeVec.push_back(nodeMap.at(vectorOne[j]).getChildren().at(i));
+				}
 				total_cost += nodeMap.at(vectorOne[j]).getChildren().at(i).getCost();
 			}
 		}
 	}
-
-
-	/*for(int j = 0; j < vectorOne.size(); j++){
-		for(int i = 0; i < nodeMap.at(vectorOne[j]).getChildren().size(); i++){
-			//cout << "node: " << vectorOne[j] << endl;
-			//cout << "edge " << nodeMap.at(vectorOne[j]).getChildren().at(i).getTarget() << " " << endl;
-			if(findElement(vectorTwo, nodeMap.at(vectorOne[j]).getChildren().at(i).getTarget())){
-			//	cout << "j: " << j << endl;
-			//	cout << "target: " << nodeMap.at(vectorOne[j]).getChildren().at(i).getTarget() << endl;
-				total_cost += nodeMap.at(vectorOne[j]).getChildren().at(i).getCost();
-			}
-		}
-	}*/
-
 	return total_cost;
 } 
+
+int betterTotalCost(vector<Edge> &edgeVec) {
+	int totalCost = 0;
+	for (int i = 0; i < edgeVec.size(); i++) {
+		totalCost += edgeVec[i].cost;
+	}
+	return totalCost;
+}
 
 int main() {
 	srand(time(NULL));
@@ -155,9 +173,9 @@ int main() {
 	ifstream fin;
 	ofstream fout;
 
-	fout.open("output.txt");
+	
 
-	fin.open("input.txt"); //insert input file here 
+	fin.open("1000.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
@@ -174,6 +192,7 @@ int main() {
 	fin >> edges;
 
 	while (!fin.eof()) {
+		//cout << "here" << endl;
 		fin >> nodeOne;
 		fin >> nodeTwo;
 		fin >> weight;
@@ -184,39 +203,27 @@ int main() {
 			maxNode = nodeTwo;
 		}
 		if (nodeMap.find(nodeOne) != nodeMap.end()) {
-			nodeMap[nodeOne].addChild(Edge(nodeTwo, weight));
+			nodeMap[nodeOne].addChild(Edge(nodeTwo, weight, nodeOne));
 		}
 		else {
-			Node tempNode = Node(nodeOne, Edge(nodeTwo, weight));
+			Node tempNode = Node(nodeOne, Edge(nodeTwo, weight, nodeOne));
 			nodeMap.insert(make_pair(nodeOne, tempNode));
 		}
 		if (nodeMap.find(nodeTwo) != nodeMap.end()) {
-			nodeMap[nodeTwo].addChild(Edge(nodeOne, weight));
+			nodeMap[nodeTwo].addChild(Edge(nodeOne, weight, nodeTwo));
 		}
 		else {
-			Node tempNodeTwo = Node(nodeTwo, Edge(nodeOne, weight));
+			Node tempNodeTwo = Node(nodeTwo, Edge(nodeOne, weight, nodeTwo));
 			nodeMap.insert(make_pair(nodeTwo, tempNodeTwo));
 		}
 	}
-	/*bool bitArrayOne[10000];
-	bool bitArrayTwo[10000];
-	bool bitArrayOneBest[10000];
-	bool bitArrayTwoBest[10000];*/
-	/*bool bitArray
-	bool* bitArrayOne = NULL;
-	bool* bitArrayOneBest = NULL;
-	bitArrayOneBest = new bool[maxNode + 1];
-	bitArrayOne = new bool[maxNode+1];
-	bool* bitArrayTwo = NULL;
-	bool* bitArrayTwoBest = NULL;
-	bitArrayTwoBest = new bool[maxNode + 1];
-	bitArrayTwo = new bool[maxNode+1];
-	*/
+
 
 	bool *bitArrayOne = new bool[maxNode + 1];
 	bool *bitArrayOneBest = new bool[maxNode + 1];
 	bool *bitArrayTwo = new bool[maxNode + 1];
 	bool *bitArrayTwoBest = new bool[maxNode + 1];
+
 	for (int i = 0; i <= maxNode; i++) {
 	bitArrayOne[i] = 0;
 	bitArrayTwo[i] = 0;
@@ -258,76 +265,62 @@ int main() {
 	for (int i = 0; i < vectorOne.size(); i++) {
 		bitArrayOne[vectorOne[i]] = 1;
 	}
-	for (int i = 0; i < vectorOne.size(); i++) {
-		cout << vectorOne[i] << ", ";
-	}
-	for (int i = 0; i < 7; i++) {
-		cout <<  bitArrayOne[i] << ", ";
-	}
 	for (int i = 0; i < vectorTwo.size(); i++) {
 		bitArrayTwo[vectorTwo[i]] = 1;
 	}
 	bool rando = 0;
-
-	int initialCost = getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
+	vector<Edge> edgeVec;
+	fin.close();
+	int initialCost = getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne, edgeVec, 1);
 	int swapIndex;
 	int swapIndexTwo;
 	int lastSwapped = -1;
 	cout << endl;
-	cout << getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne) << endl;
 	vector<int> bestvectorOne = vectorOne;
 	vector<int> bestvectorTwo = vectorTwo;
 	int bestCost = initialCost;
 	int currentCost = 0;
 	cout << "Initial cost: " << initialCost << endl;
-	cout << "EDGED: " << edges << endl;
 	calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
 	calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
 	for (int i = 0; i < edges; i++) {
 		cout << "I: " << i << endl;
 		if (rando == 0) {
-			cout << "Calc cost 1" << endl;
-			//calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
-			//cout << "Calc cost 2" << endl;
-			//calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
-		//	cout << "Calculated costs" << endl;
-			cout << "selecting node" << endl;
-			swapIndex = selectNode(vectorOne, vectorTwo, nodeMap, lastSwapped);
-			cout << "selected" << endl;
+			if (i % 25 == 0 && i > 100) {
+				swapIndex = vectorOne[rand() % vectorOne.size()];
+			}
+			else {
+				swapIndex = vectorOne[rand() % vectorOne.size()];
+			}
 		}
 		else {
-			swapIndex = vectorOne[rand() % vectorOne.size()];
+			swapIndex = selectNode(vectorOne, vectorTwo, nodeMap, lastSwapped);
 		}
-		//cout << "got index" << swapIndex << " " << vectorOne.size() <<  endl;
-		cout << "Swapping" << endl;
-		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo, nodeMap);
-		cout << "swapped nodes" << endl;
+		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo, nodeMap, edgeVec);
 		if (rando == 0) {
-			//calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
+			if (i % 25 == 0 && i > 100) {
+				swapIndex = vectorTwo[rand() % vectorTwo.size()];
+			}
+			else {
+				swapIndex = vectorTwo[rand() % vectorTwo.size()];
+			}
+		}
+		else {
 			swapIndex = selectNode(vectorTwo, vectorOne, nodeMap, lastSwapped);
 		}
-		else {
-			swapIndex = vectorTwo[rand() % vectorTwo.size()];
-		}
-		swapvector(vectorTwo, vectorOne, swapIndex, bitArrayTwo, bitArrayOne, nodeMap);
-		cout << "start calc cost" << endl;
-		currentCost = getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
+
+		swapvector(vectorTwo, vectorOne, swapIndex, bitArrayTwo, bitArrayOne, nodeMap, edgeVec);
+		currentCost = betterTotalCost(edgeVec);
 		cout << "Current Cost: " << currentCost << endl;
-		//cout << "done calc cost" << currentCost << endl;
-		//cout << "BEST COST: " << bestCost << endl;
 		if (currentCost < bestCost) {
 			bestCost = currentCost;
 			cout << "@#$@$@#$@#$@#$@#$BEST COST: " << bestCost << endl;
-			for (int i = 0; i < 7; i++) {
-				cout << "BEST value: " << bitArrayOne[i] << endl;
-			}
 			bestvectorOne = vectorOne;
 			bestvectorTwo = vectorTwo;
 			for (int i = 0; i <= maxNode; i++) {
 				bitArrayOneBest[i] = bitArrayOne[i];
 			}
-			//bitArrayOneBest = bitArrayOne;
-			//bitArrayTwoBest = bitArrayTwo;
+			fout.open("output.txt");
 			fout << bestCost << "\n";
 			for(int i = 0; i < bestvectorOne.size(); i++) {
 				fout << bestvectorOne[i] << " ";
@@ -337,17 +330,10 @@ int main() {
 				fout << bestvectorTwo[i] << " ";
 			}
 			fout << "\n";
+			fout.close();
 		}
-		//cout << "Cost: " << getTotalCost(vectorOne, vectorTwo, nodeMap) << endl;
 	}
-	printvectors(vectorOne, vectorTwo);
-	cout << endl;
-	printvectors(bestvectorOne, bestvectorTwo);
-	cout << endl;
-	for (int i = 0; i < 11; i++) {
-		cout << "value: " << bitArrayOneBest[i] << endl;
-	}
-	cout << getTotalCost(bestvectorOne, bestvectorTwo, nodeMap, bitArrayOneBest) << endl;
+	cout << getTotalCost(bestvectorOne, bestvectorTwo, nodeMap, bitArrayOneBest, edgeVec, 0) << endl;
 	//ask John how he planned on creating nodes
 
 
