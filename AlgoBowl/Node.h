@@ -18,5 +18,12 @@ public:
 	int getValue();
 	void printChildren();
 	vector<Edge> getChildren() const;
-	//	bool operator< (const)
+	friend bool operator < (Node const& a, Node const& b) {
+		if (a.getChildren().size() > b.getChildren().size()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 };

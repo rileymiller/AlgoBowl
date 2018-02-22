@@ -7,6 +7,7 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <algorithm>
 
 
 using namespace std;
@@ -161,6 +162,14 @@ int betterTotalCost(vector<Edge> &edgeVec) {
 	}
 	return totalCost;
 }
+/*struct less_than_key
+{
+	inline bool operator() (const Node& nodeOne, const Node& nodeTwo)
+	{
+		return (nodeOne.getChildren().size < struct2.key);
+	}
+};*/
+
 
 int main() {
 	srand(time(NULL));
@@ -175,7 +184,7 @@ int main() {
 
 	
 
-	fin.open("input_group27.txt"); //insert input file here 
+	fin.open("input_group5.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
@@ -198,7 +207,7 @@ int main() {
 		if (nodeOne > maxNode) {
 			maxNode = nodeOne;
 		}
-		else if (nodeTwo > maxNode) {
+		if (nodeTwo > maxNode) {
 			maxNode = nodeTwo;
 		}
 		if (nodeMap.find(nodeOne) != nodeMap.end()) {
@@ -241,26 +250,60 @@ int main() {
     //cout << endl;
     nodes.push_back(p.second);
 	}
-
-	/*cout << endl;
-	for(int i =0; i < nodes.size(); i++){
+	sort(nodes.begin(), nodes.end());
+	cout << endl;
+	/*for(int i =0; i < nodes.size(); i++){
 		cout << nodes.at(i).getValue() << " : "; 
-		nodes.at(i).printChildren();
+		cout << nodes[i].getChildren().size();
 		cout << endl;
 	}*/
 
 
 	vector<int> vectorOne;
 	vector<int> vectorTwo;
-	
-
-	for(int i = 0; i < nodes.size(); i++){
+	//int k = 0;
+	//cout << nodes.size() << "NOED SIZE" << endl;
+	while (vectorOne.size() <= maxNode / 2) {
+		if (vectorOne.size() < (maxNode / 2)) {
+			vectorOne.push_back(nodes[0].getValue());
+		}
+		else {
+			break;
+		}
+		for (int i = 0; i < nodes[0].getChildren().size(); i++) {
+			if (vectorOne.size() < (maxNode / 2)) {
+				if (!findElement(vectorOne, nodes[0].getChildren().at(i).getTarget())) {
+					vectorOne.push_back(nodes[0].getChildren().at(i).getTarget());
+					nodes.erase(nodes.begin() + getIndex(nodes[0].getChildren().at(i).getTarget(), nodes));
+				}
+			}
+			else {
+				//vectorTwo.push_back(nodes[0].getChildren().at(i).getTarget());
+			}
+			//if (getIndex(nodes[0].getChildren().at(i).getTarget(), nodes) != -1) {
+			//	cout << getIndex(nodes[0].getChildren().at(i).getTarget(), nodes) << endl;
+			//	nodes.erase(nodes.begin() + getIndex(nodes[0].getChildren().at(i).getTarget(), nodes));
+			//}
+		}
+		nodes.erase(nodes.begin());
+		//k++;
+	}
+	for (int i = 0; i < nodes.size(); i++) {
+		vectorTwo.push_back(nodes[i].getValue());
+	}
+	//sort(vectorOne.begin(), vectorOne.end());
+	//sort(vectorTwo.begin(), vectorTwo.end());
+	//printvectors(vectorOne, vectorTwo);
+	//cout << endl;
+	//cout <<	vectorOne.size() << endl;
+	//cout << vectorTwo.size() << endl;
+	/*for(int i = 0; i < nodes.size(); i++){
 		if(i % 2 == 0){
 			vectorOne.push_back(nodes.at(i).getValue());
 		} else {
 			vectorTwo.push_back(nodes.at(i).getValue());
 		}
-	}
+	}*/
 	for (int i = 0; i < vectorOne.size(); i++) {
 		bitArrayOne[vectorOne[i]] = 1;
 	}
@@ -288,7 +331,7 @@ int main() {
 		//cout << "VEC 2 SIZE: " << vectorTwo.size() << endl;
 		//cout << "EDGEVEC " << edgeVec.size() << endl;
 		if (rando == 0) {
-			if (i % 10 == 0 && i > 50) {
+			if (i % 25 == 0 && i > 50) {
 				swapIndex = vectorOne[rand() % vectorOne.size()];
 			}
 			else {
