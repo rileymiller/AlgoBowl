@@ -175,7 +175,7 @@ int main() {
 
 	
 
-	fin.open("1000.txt"); //insert input file here 
+	fin.open("input_group27.txt"); //insert input file here 
 
 	if (!fin) {
 		cerr << "Unable to open file datafile.txt";
@@ -283,14 +283,17 @@ int main() {
 	cout << "Initial cost: " << initialCost << endl;
 	calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
 	calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
-	for (int i = 0; i < edges; i++) {
+	for (int i = 0; i < edges*1000; i++) {
 		cout << "I: " << i << endl;
+		//cout << "VEC 1 SIZE: " << vectorOne.size() << endl;
+		//cout << "VEC 2 SIZE: " << vectorTwo.size() << endl;
+		//cout << "EDGEVEC " << edgeVec.size() << endl;
 		if (rando == 0) {
-			if (i % 25 == 0 && i > 100) {
+			if (i % 10 == 0 && i > 50) {
 				swapIndex = vectorOne[rand() % vectorOne.size()];
 			}
 			else {
-				swapIndex = vectorOne[rand() % vectorOne.size()];
+				swapIndex = selectNode(vectorOne, vectorTwo, nodeMap, lastSwapped);
 			}
 		}
 		else {
@@ -298,17 +301,16 @@ int main() {
 		}
 		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo, nodeMap, edgeVec);
 		if (rando == 0) {
-			if (i % 25 == 0 && i > 100) {
+			if (i % 10 == 0 && i > 50) {
 				swapIndex = vectorTwo[rand() % vectorTwo.size()];
 			}
 			else {
-				swapIndex = vectorTwo[rand() % vectorTwo.size()];
+				swapIndex = selectNode(vectorTwo, vectorOne, nodeMap, lastSwapped);
 			}
 		}
 		else {
 			swapIndex = selectNode(vectorTwo, vectorOne, nodeMap, lastSwapped);
 		}
-
 		swapvector(vectorTwo, vectorOne, swapIndex, bitArrayTwo, bitArrayOne, nodeMap, edgeVec);
 		currentCost = betterTotalCost(edgeVec);
 		cout << "Current Cost: " << currentCost << endl;
