@@ -183,7 +183,7 @@ int main() {
 	ofstream fout;
 
 	
-
+	//fin.open("input.txt");
 	fin.open("input_group5.txt"); //insert input file here 
 
 	if (!fin) {
@@ -250,7 +250,7 @@ int main() {
     //cout << endl;
     nodes.push_back(p.second);
 	}
-	sort(nodes.begin(), nodes.end());
+	//sort(nodes.begin(), nodes.end());
 	cout << endl;
 	/*for(int i =0; i < nodes.size(); i++){
 		cout << nodes.at(i).getValue() << " : "; 
@@ -290,7 +290,7 @@ int main() {
 	}
 	for (int i = 0; i < nodes.size(); i++) {
 		vectorTwo.push_back(nodes[i].getValue());
-	}
+	  }
 	//sort(vectorOne.begin(), vectorOne.end());
 	//sort(vectorTwo.begin(), vectorTwo.end());
 	//printvectors(vectorOne, vectorTwo);
@@ -304,13 +304,14 @@ int main() {
 			vectorTwo.push_back(nodes.at(i).getValue());
 		}
 	}*/
+	//printvectors(vectorOne, vectorTwo);
 	for (int i = 0; i < vectorOne.size(); i++) {
 		bitArrayOne[vectorOne[i]] = 1;
 	}
 	for (int i = 0; i < vectorTwo.size(); i++) {
 		bitArrayTwo[vectorTwo[i]] = 1;
 	}
-	bool rando = 0;
+	bool rando = 1;
 	vector<Edge> edgeVec;
 	fin.close();
 	int initialCost = getTotalCost(vectorOne, vectorTwo, nodeMap, bitArrayOne, edgeVec, 1);
@@ -323,15 +324,33 @@ int main() {
 	int bestCost = initialCost;
 	int currentCost = 0;
 	cout << "Initial cost: " << initialCost << endl;
+	//bestCost = currentCost;
+	cout << "@#$@$@#$@#$@#$@#$BEST COST: " << bestCost << endl;
+	bestvectorOne = vectorOne;
+	bestvectorTwo = vectorTwo;
+	for (int i = 0; i <= maxNode; i++) {
+		bitArrayOneBest[i] = bitArrayOne[i];
+	}
+	fout.open("output.txt");
+	fout << bestCost << "\n";
+	for (int i = 0; i < bestvectorOne.size(); i++) {
+		fout << bestvectorOne[i] << " ";
+	}
+	fout << "\n";
+	for (int i = 0; i < bestvectorTwo.size(); i++) {
+		fout << bestvectorTwo[i] << " ";
+	}
+	fout << "\n";
+	fout.close();
 	calcCost(vectorOne, vectorTwo, nodeMap, bitArrayOne);
 	calcCost(vectorTwo, vectorOne, nodeMap, bitArrayTwo);
-	for (int i = 0; i < edges*1000; i++) {
+	for (int i = 0; i < edges*250; i++) {
 		cout << "I: " << i << endl;
 		//cout << "VEC 1 SIZE: " << vectorOne.size() << endl;
 		//cout << "VEC 2 SIZE: " << vectorTwo.size() << endl;
 		//cout << "EDGEVEC " << edgeVec.size() << endl;
 		if (rando == 0) {
-			if (i % 25 == 0 && i > 50) {
+			if (i % 10 == 0 && i > 25) {
 				swapIndex = vectorOne[rand() % vectorOne.size()];
 			}
 			else {
@@ -343,7 +362,7 @@ int main() {
 		}
 		swapvector(vectorOne, vectorTwo, swapIndex, bitArrayOne, bitArrayTwo, nodeMap, edgeVec);
 		if (rando == 0) {
-			if (i % 10 == 0 && i > 50) {
+			if (i % 10 == 0 && i > 25) {
 				swapIndex = vectorTwo[rand() % vectorTwo.size()];
 			}
 			else {
